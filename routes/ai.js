@@ -1,42 +1,38 @@
-import Anthropic from "@anthropic-ai/sdk";
+const OpenAI = require("openai");
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
-
 app.post("/generate-review", async (req, res) => {
   try {
-
     const { category, mood, rating } = req.body;
 
-    const msg =
-      await anthropic.messages.create({
-        model: "claude-3-5-sonnet-latest",
-        max_tokens: 200,
-        messages: [
-          {
-            role: "user",
-            content: `
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "user",
+          content: `
 Business: ${category}
 Rating: ${rating}
 Tone: ${mood}
 
 Write a short, natural, SEO-friendly customer review in 2-4 sentences.
-`
-          }
-        ]
-      });
+`,
+        },
+      ],
+      max_tokens: 150,
+    });
 
     res.json({
-      review: msg.content[0].text
+      review: completion.choices[0].message.content,
     });
 
   } catch (e) {
-
-    console.error(e);
+    console.error("OPENAI ERROR:", e);
 
     res.status(500).json({
-      error: e.message
+      error: e.message,
     });
   }
 });
