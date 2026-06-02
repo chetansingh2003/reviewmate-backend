@@ -14,8 +14,25 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+console.log(
+  "OPENAI KEY:",
+  process.env.OPENAI_API_KEY
+    ? "FOUND"
+    : "NOT FOUND"
+);
+
 app.get("/", (req, res) => {
-  res.send("ReviewMate Backend Running Successfully");
+  res.json({
+    status: "ok",
+    message: "ReviewMate Backend Running Successfully",
+  });
+});
+
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Backend working",
+  });
 });
 
 app.get("/test", (req, res) => {
@@ -28,28 +45,37 @@ app.post("/generate-review", async (req, res) => {
   try {
     const { category, mood, rating } = req.body;
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "user",
-          content: `
+    console.log("REQUEST:", req.body);
+
+    const completion =
+      await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        max_tokens: 150,
+        messages: [
+          {
+            role: "user",
+            content: `
 Business: ${category}
 Rating: ${rating}
 Tone: ${mood}
 
 Write a short, natural, SEO-friendly customer review in 2-4 sentences.
 `,
-        },
-      ],
-      max_tokens: 150,
-    });
+          },
+        ],
+      });
 
     res.json({
-      review: completion.choices[0].message.content,
+      review:
+        completion.choices[0].message.content,
     });
+
   } catch (e) {
-    console.error("OPENAI ERROR:", e);
+
+    console.error(
+      "OPENAI ERROR:",
+      e
+    );
 
     res.status(500).json({
       error: e.message,
@@ -57,15 +83,11 @@ Write a short, natural, SEO-friendly customer review in 2-4 sentences.
   }
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT =
+  process.env.PORT || 8080;
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on ${PORT}`);
-});
-
-app.get("/health", (req, res) => {
-  res.json({
-    status: "ok",
-    message: "Backend working"
-  });
+  console.log(
+    `Server running on ${PORT}`
+  );
 });
