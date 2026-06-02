@@ -62,3 +62,10 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on ${PORT}`);
 });
+
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Backend working"
+  });
+});
