@@ -27,6 +27,17 @@ app.get("/", (req, res) => {
     message: "ReviewMate Backend Running Successfully",
   });
 });
+app.get("/auth/google", (req, res) => {
+
+  const url =
+    `https://accounts.google.com/o/oauth2/v2/auth
+?client_id=${process.env.GOOGLE_CLIENT_ID}
+&redirect_uri=${process.env.REDIRECT_URI}
+&response_type=code
+&scope=https://www.googleapis.com/auth/business.manage`;
+
+  res.redirect(url);
+});
 
 app.get("/health", (req, res) => {
   res.json({
