@@ -153,3 +153,12 @@ app.get(
     }
   }
 );
+
+
+app.get("/", (req, res) => {
+  res.send("Backend Running");
+});
+
+app.get("/health", (req, res) => {
+  res.send("OK");
+});
