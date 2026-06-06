@@ -23,20 +23,10 @@ console.log(
     : "NOT FOUND"
 );
 
-app.get("/", (req, res) => {
-  res.json({
-    status: "ok",
-    message: "ReviewMate Backend Running Successfully",
-  });
-});
 
 
-app.get("/health", (req, res) => {
-  res.json({
-    status: "ok",
-    message: "Backend working",
-  });
-});
+
+
 
 app.get("/test", (req, res) => {
   res.json({
