@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const OpenAI = require("openai");
+const { google } = require("googleapis");
+
 
 dotenv.config();
 
@@ -27,17 +29,7 @@ app.get("/", (req, res) => {
     message: "ReviewMate Backend Running Successfully",
   });
 });
-app.get("/auth/google", (req, res) => {
 
-  const url =
-    `https://accounts.google.com/o/oauth2/v2/auth
-?client_id=${process.env.GOOGLE_CLIENT_ID}
-&redirect_uri=${process.env.REDIRECT_URI}
-&response_type=code
-&scope=https://www.googleapis.com/auth/business.manage`;
-
-  res.redirect(url);
-});
 
 app.get("/health", (req, res) => {
   res.json({
@@ -102,3 +94,62 @@ app.listen(PORT, "0.0.0.0", () => {
     `Server running on ${PORT}`
   );
 });
+
+const oauth2Client =
+  new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    process.env.GOOGLE_REDIRECT_URI
+  );
+
+app.get("/auth/google", (req, res) => {
+
+  const url = oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    prompt: "consent",
+    scope: [
+      "openid",
+      "email",
+      "profile",
+      "https://www.googleapis.com/auth/business.manage"
+    ]
+  });
+
+  res.redirect(url);
+});
+
+app.get(
+  "/auth/google/callback",
+  async (req, res) => {
+
+    try {
+
+      const code = req.query.code;
+
+      const { tokens } =
+        await oauth2Client.getToken(code);
+
+      console.log(
+        "ACCESS TOKEN:",
+        tokens.access_token
+      );
+
+      console.log(
+        "REFRESH TOKEN:",
+        tokens.refresh_token
+      );
+
+      res.send(
+        "Google Business Connected Successfully"
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      res.status(500).send(
+        "OAuth Error"
+      );
+    }
+  }
+);
