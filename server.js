@@ -5,6 +5,7 @@ const OpenAI = require("openai");
 const reviewChecker =
   require("./cron/reviewChecker");
 const { google } = require("googleapis");
+const axios = require("axios");
 require("dotenv").config();
 
 console.log(
@@ -109,6 +110,7 @@ console.log("CLIENT SECRET:",
 console.log("REDIRECT:",
   process.env.GOOGLE_REDIRECT_URI);
 
+
 const oauth2Client =
   new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
@@ -175,4 +177,42 @@ app.get("/", (req, res) => {
 
 app.get("/health", (req, res) => {
   res.send("OK");
+});
+
+
+
+app.get("/accounts", async (req, res) => {
+
+  try {
+
+    oauth2Client.setCredentials({
+      refresh_token:
+        process.env.GOOGLE_REFRESH_TOKEN,
+    });
+
+    const accessToken =
+      await oauth2Client.getAccessToken();
+
+    const response =
+      await axios.get(
+        "https://mybusinessaccountmanagement.googleapis.com/v1/accounts",
+        {
+          headers: {
+            Authorization:
+              `Bearer ${accessToken.token}`,
+          },
+        }
+      );
+
+    res.json(response.data);
+
+  } catch (err) {
+
+    console.log(
+      err.response?.data ||
+      err.message
+    );
+
+    res.status(500).send(err.message);
+  }
 });
