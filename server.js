@@ -188,7 +188,6 @@ app.get("/health", (req, res) => {
 });
 
 
-
 app.get("/accounts", async (req, res) => {
 
   try {
@@ -217,15 +216,24 @@ app.get("/accounts", async (req, res) => {
   } catch (err) {
 
     console.log(
-      err.response?.data ||
-      err.message
+      "GOOGLE ERROR:",
+      JSON.stringify(
+        err.response?.data,
+        null,
+        2
+      )
     );
 
-    res.status(500).send(err.message);
+    res.status(
+      err.response?.status || 500
+    ).json(
+      err.response?.data || {
+        error: err.message
+      }
+    );
   }
+
 });
-
-
 app.get("/locations", async (req, res) => {
 
   try {
@@ -254,12 +262,20 @@ app.get("/locations", async (req, res) => {
   } catch (err) {
 
     console.log(
-      err.response?.data ||
-      err.message
+      "LOCATION ERROR:",
+      JSON.stringify(
+        err.response?.data,
+        null,
+        2
+      )
     );
 
-    res.status(500).send(
-      err.message
+    res.status(
+      err.response?.status || 500
+    ).json(
+      err.response?.data || {
+        error: err.message
+      }
     );
   }
 
