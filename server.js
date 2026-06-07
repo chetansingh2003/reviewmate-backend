@@ -77,17 +77,25 @@ Write a short, natural, SEO-friendly customer review in 2-4 sentences.
         completion.choices[0].message.content,
     });
 
-  } catch (e) {
+  }catch (err) {
 
-    console.error(
-      "OPENAI ERROR:",
-      e
-    );
+  console.log(
+    "FULL ERROR:",
+    JSON.stringify(
+      err.response?.data,
+      null,
+      2
+    )
+  );
 
-    res.status(500).json({
-      error: e.message,
-    });
-  }
+  res.status(
+    err.response?.status || 500
+  ).json(
+    err.response?.data || {
+      error: err.message
+    }
+  );
+}
 });
 reviewChecker.start();
 
@@ -215,4 +223,44 @@ app.get("/accounts", async (req, res) => {
 
     res.status(500).send(err.message);
   }
+});
+
+
+app.get("/locations", async (req, res) => {
+
+  try {
+
+    oauth2Client.setCredentials({
+      refresh_token:
+        process.env.GOOGLE_REFRESH_TOKEN,
+    });
+
+    const accessToken =
+      await oauth2Client.getAccessToken();
+
+    const response =
+      await axios.get(
+        `https://mybusinessbusinessinformation.googleapis.com/v1/accounts/${process.env.GOOGLE_ACCOUNT_ID}/locations`,
+        {
+          headers: {
+            Authorization:
+              `Bearer ${accessToken.token}`,
+          },
+        }
+      );
+
+    res.json(response.data);
+
+  } catch (err) {
+
+    console.log(
+      err.response?.data ||
+      err.message
+    );
+
+    res.status(500).send(
+      err.message
+    );
+  }
+
 });
