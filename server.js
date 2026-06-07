@@ -2,7 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const OpenAI = require("openai");
+const reviewChecker =
+  require("./cron/reviewChecker");
 const { google } = require("googleapis");
+require("dotenv").config();
+
+console.log(
+  "OPENAI:",
+  process.env.OPENAI_API_KEY
+);
 
 
 dotenv.config();
@@ -75,6 +83,7 @@ Write a short, natural, SEO-friendly customer review in 2-4 sentences.
     });
   }
 });
+reviewChecker.start();
 
 const PORT =
   process.env.PORT || 8080;

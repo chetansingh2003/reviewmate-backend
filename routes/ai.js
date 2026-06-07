@@ -1,4 +1,8 @@
 const OpenAI = require("openai");
+const express = require("express");
+
+const router = express.Router();
+
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -36,3 +40,16 @@ Write a short, natural, SEO-friendly customer review in 2-4 sentences.
     });
   }
 });
+
+
+
+router.get("/", (req, res) => {
+
+  res.json({
+    success: true,
+    message: "AI Route Working",
+  });
+
+});
+
+module.exports = router;
