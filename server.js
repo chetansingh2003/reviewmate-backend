@@ -12,6 +12,11 @@ console.log(
   process.env.OPENAI_API_KEY
 );
 
+console.log(
+  "REDIRECT URI:",
+  process.env.GOOGLE_REDIRECT_URI
+);
+
 
 dotenv.config();
 
@@ -93,6 +98,16 @@ app.listen(PORT, "0.0.0.0", () => {
     `Server running on ${PORT}`
   );
 });
+console.log("CLIENT ID:",
+  process.env.GOOGLE_CLIENT_ID);
+
+console.log("CLIENT SECRET:",
+  process.env.GOOGLE_CLIENT_SECRET
+    ? "FOUND"
+    : "NOT FOUND");
+
+console.log("REDIRECT:",
+  process.env.GOOGLE_REDIRECT_URI);
 
 const oauth2Client =
   new google.auth.OAuth2(
