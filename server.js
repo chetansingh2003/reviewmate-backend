@@ -97,7 +97,7 @@ Write a short, natural, SEO-friendly customer review in 2-4 sentences.
   );
 }
 });
-reviewChecker.start();
+// reviewChecker.start();
 
 const PORT =
   process.env.PORT || 8080;
@@ -308,5 +308,43 @@ app.get("/debug-token", async (req, res) => {
   } catch (e) {
     res.json(e.response?.data || e.message);
   }
+});
+
+app.get("/my-business-test", async (req, res) => {
+
+  try {
+
+    oauth2Client.setCredentials({
+      refresh_token:
+        process.env.GOOGLE_REFRESH_TOKEN,
+    });
+
+    const accessToken =
+      await oauth2Client.getAccessToken();
+
+    const response =
+      await axios.get(
+        "https://mybusinessaccountmanagement.googleapis.com/v1/accounts",
+        {
+          headers: {
+            Authorization:
+              `Bearer ${accessToken.token}`,
+          },
+        }
+      );
+
+    res.json(response.data);
+
+  } catch (err) {
+
+    res.status(
+      err.response?.status || 500
+    ).json(
+      err.response?.data || {
+        error: err.message,
+      }
+    );
+  }
+
 });
 
