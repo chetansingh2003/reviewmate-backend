@@ -280,3 +280,38 @@ app.get("/locations", async (req, res) => {
   }
 
 });
+
+
+app.get("/debug-token", async (req, res) => {
+  try {
+    oauth2Client.setCredentials({
+      refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+    });
+
+    const token = await oauth2Client.getAccessToken();
+
+    res.json({
+      token: token.token ? "SUCCESS" : "FAILED"
+    });
+
+  } catch (e) {
+    res.json(e.response?.data || e.message);
+  }
+});
+
+app.get("/debug-token", async (req, res) => {
+  try {
+    oauth2Client.setCredentials({
+      refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+    });
+
+    const token = await oauth2Client.getAccessToken();
+
+    res.json({
+      token: token.token ? "SUCCESS" : "FAILED"
+    });
+
+  } catch (e) {
+    res.json(e.response?.data || e.message);
+  }
+});
