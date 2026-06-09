@@ -187,7 +187,6 @@ app.get("/health", (req, res) => {
   res.send("OK");
 });
 
-
 app.get("/accounts", async (req, res) => {
 
   try {
@@ -200,6 +199,8 @@ app.get("/accounts", async (req, res) => {
     const accessToken =
       await oauth2Client.getAccessToken();
 
+    console.log("ACCESS TOKEN OK");
+
     const response =
       await axios.get(
         "https://mybusinessaccountmanagement.googleapis.com/v1/accounts",
@@ -208,10 +209,20 @@ app.get("/accounts", async (req, res) => {
             Authorization:
               `Bearer ${accessToken.token}`,
           },
+          validateStatus: () => true,
         }
       );
 
-    res.json(response.data);
+    console.log(
+      "GOOGLE RESPONSE:",
+      JSON.stringify(
+        response.data,
+        null,
+        2
+      )
+    );
+
+    return res.json(response.data);
 
   } catch (err) {
 
@@ -224,7 +235,7 @@ app.get("/accounts", async (req, res) => {
       )
     );
 
-    res.status(
+    return res.status(
       err.response?.status || 500
     ).json(
       err.response?.data || {
@@ -299,19 +310,3 @@ app.get("/debug-token", async (req, res) => {
   }
 });
 
-app.get("/debug-token", async (req, res) => {
-  try {
-    oauth2Client.setCredentials({
-      refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-    });
-
-    const token = await oauth2Client.getAccessToken();
-
-    res.json({
-      token: token.token ? "SUCCESS" : "FAILED"
-    });
-
-  } catch (e) {
-    res.json(e.response?.data || e.message);
-  }
-});
