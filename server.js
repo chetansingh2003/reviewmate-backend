@@ -377,3 +377,43 @@ app.post("/create-order", async (req, res) => {
     });
   }
 });
+
+app.post("/create-order", async (req, res) => {
+  try {
+
+    console.log("BODY =", req.body);
+
+    console.log(
+      "KEY ID =",
+      process.env.RAZORPAY_KEY_ID
+    );
+
+    console.log(
+      "SECRET =",
+      process.env.RAZORPAY_KEY_SECRET
+        ? "FOUND"
+        : "NOT FOUND"
+    );
+
+    const { amount } = req.body;
+
+    const order = await razorpay.orders.create({
+      amount,
+      currency: "INR",
+      receipt: `reviewmate_${Date.now()}`
+    });
+
+    console.log("ORDER =", order);
+
+    res.json(order);
+
+  } catch (err) {
+
+    console.log("RAZORPAY ERROR");
+    console.log(err);
+
+    res.status(500).json({
+      error: err.message
+    });
+  }
+});
