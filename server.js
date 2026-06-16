@@ -8,10 +8,7 @@ const { google } = require("googleapis");
 const axios = require("axios");
 require("dotenv").config();
 
-console.log(
-  "OPENAI:",
-  process.env.OPENAI_API_KEY
-);
+
 
 console.log(
   "REDIRECT URI:",
@@ -30,12 +27,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-console.log(
-  "OPENAI KEY:",
-  process.env.OPENAI_API_KEY
-    ? "FOUND"
-    : "NOT FOUND"
-);
+
 
 
 
@@ -47,57 +39,48 @@ app.get("/test", (req, res) => {
     success: true,
   });
 });
-
 app.post("/generate-review", async (req, res) => {
   try {
+
     const { category, mood, rating } = req.body;
 
-    console.log("REQUEST:", req.body);
+    console.log("REQUEST =", req.body);
 
     const completion =
       await openai.chat.completions.create({
         model: "gpt-4o-mini",
-        max_tokens: 150,
         messages: [
           {
             role: "user",
             content: `
-Business: ${category}
+Write a Google review.
+
+Business Category: ${category}
 Rating: ${rating}
 Tone: ${mood}
 
-Write a short, natural, SEO-friendly customer review in 2-4 sentences.
-`,
-          },
+Review should be natural and 2-3 sentences.
+`
+          }
         ],
+        max_tokens: 120
       });
 
-    res.json({
+    return res.json({
       review:
-        completion.choices[0].message.content,
+        completion.choices[0].message.content
     });
 
-  }catch (err) {
+  } catch (err) {
 
-  console.log(
-    "FULL ERROR:",
-    JSON.stringify(
-      err.response?.data,
-      null,
-      2
-    )
-  );
+    console.log("OPENAI ERROR");
+    console.log(err);
 
-  res.status(
-    err.response?.status || 500
-  ).json(
-    err.response?.data || {
+    return res.status(500).json({
       error: err.message
-    }
-  );
-}
-});
-// reviewChecker.start();
+    });
+  }
+});// reviewChecker.start();
 
 const PORT =
   process.env.PORT || 8080;
@@ -355,34 +338,7 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-app.post("/create-order", async (req, res) => {
-  try {
 
-    const { amount } = req.body;
-
-if (!amount) {
-  return res.status(400).json({
-    error: "Amount missing"
-  });
-}
-
-    const order = await razorpay.orders.create({
-      amount: amount,
-      currency: "INR",
-      receipt: `reviewmate_${Date.now()}`
-    });
-
-    res.json(order);
-
-  } catch (err) {
-
-    console.log(err);
-
-    res.status(500).json({
-      error: err.message
-    });
-  }
-});
 
 app.post("/create-order", async (req, res) => {
   try {
