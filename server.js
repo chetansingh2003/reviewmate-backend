@@ -360,6 +360,12 @@ app.post("/create-order", async (req, res) => {
 
     const { amount } = req.body;
 
+if (!amount) {
+  return res.status(400).json({
+    error: "Amount missing"
+  });
+}
+
     const order = await razorpay.orders.create({
       amount: amount,
       currency: "INR",
@@ -396,6 +402,12 @@ app.post("/create-order", async (req, res) => {
     );
 
     const { amount } = req.body;
+
+if (!amount) {
+  return res.status(400).json({
+    error: "Amount missing"
+  });
+}
 
     const order = await razorpay.orders.create({
       amount,
