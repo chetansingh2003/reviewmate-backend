@@ -385,3 +385,16 @@ if (!amount) {
     });
   }
 });
+
+app.post("/create-order", async (req, res) => {
+
+  const options = {
+    amount: req.body.amount,
+    currency: "INR",
+  };
+
+  const order = await razorpay.orders.create(options);
+
+  res.json(order);
+
+});
